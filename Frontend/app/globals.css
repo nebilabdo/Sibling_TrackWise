@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #dcc3ba;
+  --background: #f7fafc;
   --foreground: #1a202c;
   --card: #ffffff;
   --card-foreground: #2d3748;
@@ -424,4 +424,137 @@
 .modern-card:hover {
   box-shadow: 0 10px 25px -5px rgba(26, 32, 44, 0.1), 0 10px 10px -5px rgba(26, 32, 44, 0.04);
   transform: translateY(-2px);
+}
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 220 10% 94%; /* #D6D9DF */
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 220 10% 94%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 220 10% 97%;
+    --muted-foreground: 220 10% 40%;
+
+    --accent: 220 10% 94%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 10% 90%;
+    --input: 220 10% 90%;
+    --ring: 220 10% 94%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar colors */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 220 10% 94%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 220 10% 94%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 220 10% 90%;
+    --sidebar-ring: 220 10% 94%;
+
+    /* PROGRESS BARS - ORANGE ONLY */
+    --progress: 25 95% 53%; /* Orange color */
+    --progress-foreground: 0 0% 100%;
+    --progress-height: 0.5rem; /* Bold thickness */
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 0 0% 98%;
+
+    --card: 222 47% 15%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 222 47% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 220 10% 25%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 220 10% 25%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 10% 20%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 220 10% 25%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 10% 25%;
+    --input: 220 10% 25%;
+    --ring: 220 10% 25%;
+
+    /* Dark mode sidebar */
+    --sidebar-background: 222 47% 15%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 220 10% 25%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 220 10% 25%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 220 10% 25%;
+    --sidebar-ring: 220 10% 25%;
+
+    /* PROGRESS BARS - ORANGE ONLY (same in dark mode) */
+    --progress: 25 95% 53%;
+    --progress-foreground: 0 0% 98%;
+    --progress-height: 0.5rem;
+  }
+}
+
+@layer components {
+  /* Sidebar styles */
+  .sidebar-bg {
+    background-color: hsl(var(--sidebar-background));
+    color: hsl(var(--sidebar-foreground));
+    border-color: hsl(var(--sidebar-border));
+  }
+
+  .sidebar-item {
+    @apply transition-colors duration-200;
+  }
+
+  .sidebar-item:hover {
+    background-color: #D6D9DF;
+  }
+
+  .sidebar-item-active {
+    background-color: #D6D9DF;
+  }
+
+  /* Icon hover */
+  .icon-hover:hover {
+    background-color: #D6D9DF;
+  }
+
+  /* PROGRESS BARS - ORANGE ONLY */
+  .progress-bar {
+    background-color: hsl(var(--progress));
+    color: hsl(var(--progress-foreground));
+    height: var(--progress-height);
+    @apply rounded-full;
+  }
+
+  /* Progress container */
+  .progress-container {
+    @apply w-full bg-gray-200 rounded-full overflow-hidden;
+    height: var(--progress-height);
+  }
 }
