@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< Updated upstream
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,6 +24,26 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
+=======
+import type React from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/AuthContext"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { BookOpen, User, Lock } from "lucide-react"
+
+export default function LoginPage() {
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
+  const { login, user } = useAuth()
+  const router = useRouter()
+>>>>>>> Stashed changes
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +51,7 @@ export default function LoginPage() {
     setError("");
 
     try {
+<<<<<<< Updated upstream
       const success = await login(email, password);
       if (success) {
         router.push("/child/dashboard");
@@ -38,6 +60,19 @@ export default function LoginPage() {
       setError(
         err instanceof Error ? err.message : "Login failed. Please try again."
       );
+=======
+      const success = await login(username, password)
+      if (success && user) {
+        // Redirect based on the authenticated user's role
+        const redirectPath = user.role === "admin" ? "/admindashboard" : "/child/dashboard"
+        router.push(redirectPath)
+      } else {
+        setError("Invalid username or password")
+      }
+    } catch (err) {
+      setError("Login failed. Please try again. Check console for details.")
+      console.error("Login error:", err)
+>>>>>>> Stashed changes
     } finally {
       setLoading(false);
     }
@@ -141,8 +176,22 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
+<<<<<<< Updated upstream
         </CardContent>
       </Card>
     </div>
   );
 }
+=======
+          <div className="mt-6 text-center text-sm text-gray-500">
+            <p>Demo Accounts:</p>
+            <p>student1/pass123 (Child - Grade 5)</p>
+            <p>student2/pass456 (Child - Grade 6)</p>
+            <p>admin/admin123 (Admin)</p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+>>>>>>> Stashed changes

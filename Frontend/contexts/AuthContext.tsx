@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface User {
+<<<<<<< Updated upstream
   id: string;
   username: string;
   grade: string;
@@ -12,6 +13,15 @@ interface User {
   role?: string;
   avatar?: string;
   token?: string;
+=======
+  id: string
+  username: string
+  grade: string
+  name: string
+  email?: string
+  role?: string
+  avatar?: string
+>>>>>>> Stashed changes
 }
 
 interface AuthContextType {
@@ -23,7 +33,42 @@ interface AuthContextType {
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
+<<<<<<< Updated upstream
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+=======
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+// ⚠️ Replace this mockUsers with real backend API calls
+const mockUsers = [
+  {
+    id: "1",
+    username: "student1",
+    password: "pass123", // only for mock validation, NEVER store password in state/localStorage
+    grade: "5",
+    name: "John Doe",
+    email: "john@example.com",
+    role: "child",
+  },
+  {
+    id: "2",
+    username: "student2",
+    password: "pass456",
+    grade: "6",
+    name: "Jane Smith",
+    email: "jane@example.com",
+    role: "child",
+  },
+  {
+    id: "3",
+    username: "admin",
+    password: "admin123", // Added admin user
+    grade: "", // Admin may not need a grade
+    name: "Admin User",
+    email: "admin@example.com",
+    role: "admin",
+  },
+]
+>>>>>>> Stashed changes
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -187,5 +232,10 @@ export function useAuth() {
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
+<<<<<<< Updated upstream
   return context;
 }
+=======
+  return context
+}
+>>>>>>> Stashed changes
