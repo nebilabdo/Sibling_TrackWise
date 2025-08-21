@@ -8,5 +8,9 @@ const login = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+const logout = (req, res) => {
+  // Handle logout logic, e.g., clearing session or token
+  res.status(200).json({ message: "Logged out successfully" });
+};
 
 module.exports = { login };

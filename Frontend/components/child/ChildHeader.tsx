@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
@@ -15,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, User, Settings, LogOut, Clock, ChevronDown } from "lucide-react"
+import { Search, User, Settings, LogOut, Clock, ChevronDown } from 'lucide-react'
 
 export function ChildHeader() {
   const { user, logout } = useAuth()
@@ -24,14 +23,11 @@ export function ChildHeader() {
   const [showSearchResults, setShowSearchResults] = useState(false)
   const router = useRouter()
 
-  const handleLogout = () => {
-    logout()
-  }
+  const handleLogout = () => logout()
 
-  // Mock search data - in real app this would come from API
   const searchData = [
     { type: "subject", title: "Mathematics", path: "/child/subjects/math" },
-    { type: "subject", title: "Science", path: "/child/subjects/science" },
+    { type: "subject", title: "Science", path: "/child/subjects/science" }, // Fixed: Removed duplicate 'title'
     { type: "subject", title: "English", path: "/child/subjects/english" },
     { type: "subject", title: "History", path: "/child/subjects/history" },
     { type: "chapter", title: "Algebra Basics", path: "/child/subjects/math/chapters/chapter-1" },
@@ -52,7 +48,7 @@ export function ChildHeader() {
   const filteredResults = searchData.filter(
     (item) =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.type.toLowerCase().includes(searchQuery.toLowerCase()),
+      item.type.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const handleSearchResultClick = (path: string) => {
@@ -92,36 +88,34 @@ export function ChildHeader() {
   }
 
   return (
-    <header className="bg-white border-b border-slate-200 px-6 py-4 header-shadow">
-      <div className="flex items-center justify-between">
+    <header className="bg-[#9BA8AB] px-4 py-3 sm:px-6 sm:py-4">
+      <div className="flex items-center justify-between gap-4">
         {/* Search */}
-        <div className="flex-1 max-w-md relative">
+        <div className="flex-1 w-full md:max-w-md relative">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white w-4 h-4" />
             <Input
               placeholder="Search lessons, subjects, or topics..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 form-input border-slate-200 text-slate-700 placeholder:text-slate-400"
+              className="pl-10 bg-white/10 border-none text-white placeholder:text-gray-300 rounded-xl shadow-md focus:ring-2 focus:ring-white"
               onFocus={() => searchQuery.length > 0 && setShowSearchResults(true)}
             />
           </div>
-
-          {/* Search Results Dropdown */}
-          {showSearchResults && searchQuery.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
+          {showSearchResults && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white/90 border border-[#A3ADB7] rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto backdrop-blur-sm">
               {filteredResults.length > 0 ? (
                 <div className="py-2">
                   {filteredResults.map((result, index) => (
                     <button
                       key={index}
                       onClick={() => handleSearchResultClick(result.path)}
-                      className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 border-b border-slate-100 last:border-b-0 transition-colors"
+                      className="w-full px-4 py-3 text-left hover:bg-[#E0E6ED] flex items-center gap-3 border-b border-[#D0D8E0] last:border-b-0 transition-colors"
                     >
                       <span className="text-lg">{getTypeIcon(result.type)}</span>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-slate-800">{result.title}</span>
+                          <span className="font-medium text-[#3F4F5E]">{result.title}</span>
                           <Badge className={`text-xs ${getTypeColor(result.type)}`}>{result.type}</Badge>
                         </div>
                       </div>
@@ -129,29 +123,25 @@ export function ChildHeader() {
                   ))}
                 </div>
               ) : (
-                <div className="px-4 py-6 text-center text-slate-500">
-                  <Search className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                  <p className="text-slate-600">No results found for "{searchQuery}"</p>
-                  <p className="text-sm text-slate-400">Try searching for subjects, chapters, or topics</p>
+                <div className="px-4 py-6 text-center text-[#5C6B78]">
+                  <Search className="w-8 h-8 mx-auto mb-2 text-[#A3ADB7]" />
+                  <p>No results found for "{searchQuery}"</p>
+                  <p className="text-sm">Try searching for subjects, chapters, or topics</p>
                 </div>
               )}
             </div>
           )}
-
-          {/* Overlay to close search results */}
           {showSearchResults && <div className="fixed inset-0 z-40" onClick={() => setShowSearchResults(false)} />}
         </div>
 
         {/* Right Side */}
-        <div className="flex items-center space-x-4">
-          {/* Study Timer - Display only, no manual controls */}
-          <div className="hidden md:flex items-center space-x-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl px-4 py-2.5 border border-indigo-200">
-            <Clock className="w-4 h-4 text-indigo-600" />
-            <span className="text-sm font-mono font-semibold text-slate-700">{formatTime(dailyTime)}</span>
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          {/* Timer */}
+          <div className="hidden md:flex items-center space-x-3 bg-gradient-to-r from-[#4A5B6E] to-[#6D7A88] rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 border border-[#3D4A58] shadow-md">
+            <Clock className="w-4 h-4 text-white" />
+            <span className="text-sm font-mono font-semibold text-white">{formatTime(dailyTime)}</span>
             <Badge
-              className={`text-xs border-0 px-2 py-1 ${
-                isRunning ? "bg-emerald-500 text-white" : "bg-slate-400 text-white"
-              }`}
+              className={`text-xs border-0 px-2 py-1 ${isRunning ? "bg-emerald-500 text-white" : "bg-[#A3ADB7] text-white"}`}
             >
               {isRunning ? "Active" : "Paused"}
             </Badge>
@@ -162,38 +152,29 @@ export function ChildHeader() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                className="flex items-center space-x-2 text-white hover:text-gray-100 hover:bg-white/10 px-2 py-1.5 sm:px-3 sm:py-2"
               >
-                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold text-sm">
-                    {user?.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("") || "U"}
-                  </span>
+                <div className="w-8 h-8 bg-gradient-to-br from-[#5C6B78] to-[#4A5B6E] rounded-full flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm">{user?.name?.split(" ").map((n) => n[0]).join("") || "U"}</span>
                 </div>
                 <div className="hidden md:block text-left">
-                  <p className="text-sm font-medium text-slate-800">{user?.name || "User"}</p>
-                  <p className="text-xs text-slate-500">Grade {user?.grade || "N/A"}</p>
+                  <p className="text-sm font-medium">{user?.name || "User"}</p>
+                  <p className="text-xs text-gray-300">Grade {user?.grade || "N/A"}</p>
                 </div>
-                <ChevronDown className="w-4 h-4 text-slate-400" />
+                <ChevronDown className="w-4 h-4 text-white" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 border-slate-200 bg-white shadow-lg">
-              <DropdownMenuLabel className="text-slate-700 font-medium">My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-slate-200" />
+            <DropdownMenuContent align="end" className="w-56 bg-white border border-[#A3ADB7] shadow-lg">
+              <DropdownMenuLabel className="text-[#3F4F5E] font-medium">My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-[#A3ADB7]" />
               <DropdownMenuItem
                 onClick={() => router.push("/child/profile")}
-                className="text-slate-600 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+                className="text-[#3F4F5E] hover:bg-[#E0E6ED] hover:text-[#2D3748] cursor-pointer"
               >
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-slate-600 hover:bg-slate-50 hover:text-slate-900 cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-slate-200" />
+              <DropdownMenuSeparator className="bg-[#A3ADB7]" />
               <DropdownMenuItem
                 onClick={handleLogout}
                 className="text-red-600 hover:bg-red-50 hover:text-red-700 cursor-pointer"

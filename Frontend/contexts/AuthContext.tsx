@@ -1,36 +1,49 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface User {
+<<<<<<< Updated upstream
+  id: string;
+  username: string;
+  grade: string;
+  name: string;
+  email?: string;
+  role?: string;
+  avatar?: string;
+  token?: string;
+=======
   id: string
   username: string
   grade: string
   name: string
-  avatar?: string
   email?: string
-  password?: string
   role?: string
+  avatar?: string
+>>>>>>> Stashed changes
 }
 
 interface AuthContextType {
-  user: User | null
-  login: (username: string, password: string) => Promise<boolean>
-  logout: () => void
-  updateProfile: (data: Partial<User>) => void
-  updatePassword: (currentPassword: string, newPassword: string) => Promise<boolean>
-  isAuthenticated: boolean
+  user: User | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
+<<<<<<< Updated upstream
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+=======
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// Mock user data
+// ⚠️ Replace this mockUsers with real backend API calls
 const mockUsers = [
   {
     id: "1",
     username: "student1",
-    password: "pass123",
+    password: "pass123", // only for mock validation, NEVER store password in state/localStorage
     grade: "5",
     name: "John Doe",
     email: "john@example.com",
@@ -47,118 +60,182 @@ const mockUsers = [
   },
   {
     id: "3",
-    username: "student3",
-    password: "pass789",
-    grade: "7",
-    name: "Mike Johnson",
-    email: "mike@example.com",
-    role: "child",
+    username: "admin",
+    password: "admin123", // Added admin user
+    grade: "", // Admin may not need a grade
+    name: "Admin User",
+    email: "admin@example.com",
+    role: "admin",
   },
 ]
+>>>>>>> Stashed changes
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
+  // Initialize auth state from localStorage
   useEffect(() => {
-    try {
-      const savedUser = localStorage.getItem("user")
-      if (savedUser) {
-        const userData = JSON.parse(savedUser)
-        if (userData && userData.id) {
-          setUser(userData)
-          setIsAuthenticated(true)
-        }
-      }
-    } catch (error) {
-      console.error("Error loading user data:", error)
+    const initializeAuth = async () => {
       try {
-        localStorage.removeItem("user")
-      } catch (e) {
-        console.error("Error removing corrupted user data:", e)
-      }
-    }
-  }, [])
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser?.token) {
+            // Verify token with backend
+            const response = await fetch(
+              "http://localhost:5000/api/auth/verify",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${parsedUser.token}`,
+                },
+              }
+            );
 
-  const login = async (username: string, password: string): Promise<boolean> => {
-    try {
-      const foundUser = mockUsers.find((u) => u.username === username && u.password === password)
-      if (foundUser) {
-        const userData = {
-          id: foundUser.id,
-          username: foundUser.username,
-          grade: foundUser.grade,
-          name: foundUser.name,
-          email: foundUser.email,
-          password: foundUser.password,
-          role: foundUser.role,
+            if (response.ok) {
+              const data = await response.json();
+              setUser({ ...parsedUser, ...data.user });
+              setIsAuthenticated(true);
+            } else {
+              localStorage.removeItem("user");
+            }
+          }
         }
-        setUser(userData)
-        setIsAuthenticated(true)
-        try {
-          localStorage.setItem("user", JSON.stringify(userData))
-        } catch (error) {
-          console.error("Error saving user data:", error)
-        }
-        return true
-      }
-      return false
-    } catch (error) {
-      console.error("Login error:", error)
-      return false
-    }
-  }
-
-  const logout = () => {
-    setUser(null)
-    setIsAuthenticated(false)
-    try {
-      localStorage.removeItem("user")
-      localStorage.removeItem("progress")
-      localStorage.removeItem("timer")
-    } catch (error) {
-      console.error("Error clearing user data:", error)
-    }
-  }
-
-  const updateProfile = (data: Partial<User>) => {
-    if (user) {
-      try {
-        const updatedUser = { ...user, ...data }
-        setUser(updatedUser)
-        localStorage.setItem("user", JSON.stringify(updatedUser))
       } catch (error) {
-        console.error("Error updating user data:", error)
+        console.error("Error initializing auth:", error);
+        localStorage.removeItem("user");
+      } finally {
+        setLoading(false);
       }
-    }
-  }
+    };
 
-  const updatePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
-    if (user && user.password === currentPassword) {
-      try {
-        const updatedUser = { ...user, password: newPassword }
-        setUser(updatedUser)
-        localStorage.setItem("user", JSON.stringify(updatedUser))
-        return true
-      } catch (error) {
-        console.error("Error updating password:", error)
-        return false
+    initializeAuth();
+  }, []);
+
+  // Login with real backend API
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Login failed");
       }
+
+      const data = await response.json();
+
+      // Ensure required fields exist in response
+      if (!data.user || !data.token) {
+        throw new Error("Invalid response from server");
+      }
+
+      const userData = {
+        id: data.user._id,
+        username: data.user.username,
+        grade: data.user.grade,
+        name: data.user.name,
+        email: data.user.email,
+        role: data.user.role,
+        avatar: data.user.avatar,
+        token: data.token,
+      };
+
+      setUser(userData);
+      setIsAuthenticated(true);
+      localStorage.setItem("user", JSON.stringify(userData));
+      return true;
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
-    return false
-  }
+  };
+
+  // Logout with backend API
+  const logout = async () => {
+    try {
+      if (user?.token) {
+        await fetch("http://localhost:5000/api/auth/logout", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("user");
+      router.push("/login");
+    }
+  };
+
+  // Update profile with backend API
+  const updateProfile = async (data: Partial<User>) => {
+    if (!user?.token) return;
+
+    try {
+      const response = await fetch("http://localhost:5000/api/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Profile update failed");
+      }
+
+      const updatedUser = { ...user, ...data };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      throw error;
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateProfile, updatePassword, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        loading,
+        login,
+        logout,
+        updateProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
-export const useAuth = () => {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
+<<<<<<< Updated upstream
+  return context;
+}
+=======
   return context
 }
+>>>>>>> Stashed changes

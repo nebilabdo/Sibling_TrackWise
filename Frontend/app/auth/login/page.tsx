@@ -1,7 +1,31 @@
-"use client"
+"use client";
 
+<<<<<<< Updated upstream
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { BookOpen, User, Lock } from "lucide-react";
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter();
+=======
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
@@ -10,226 +34,164 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
-import { BookOpen, User, Lock, ArrowRight, Star } from "lucide-react"
+import { BookOpen, User, Lock } from "lucide-react"
 
 export default function LoginPage() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const { login } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const { login, user } = useAuth()
   const router = useRouter()
+>>>>>>> Stashed changes
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const success = await login(username, password)
+<<<<<<< Updated upstream
+      const success = await login(email, password);
       if (success) {
-        router.push("/child/dashboard")
+        router.push("/child/dashboard");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Login failed. Please try again."
+      );
+=======
+      const success = await login(username, password)
+      if (success && user) {
+        // Redirect based on the authenticated user's role
+        const redirectPath = user.role === "admin" ? "/admindashboard" : "/child/dashboard"
+        router.push(redirectPath)
       } else {
         setError("Invalid username or password")
       }
     } catch (err) {
-      setError("An error occurred during login")
+      setError("Login failed. Please try again. Check console for details.")
+      console.error("Login error:", err)
+>>>>>>> Stashed changes
     } finally {
-      setIsLoading(false)
+      setLoading(false);
     }
-  }
-
-  const handleDemoLogin = async (demoUsername: string, demoPassword: string) => {
-    setIsLoading(true)
-    setError("")
-
-    try {
-      const success = await login(demoUsername, demoPassword)
-      if (success) {
-        router.push("/child/dashboard")
-      } else {
-        setError("Demo login failed")
-      }
-    } catch (err) {
-      setError("An error occurred during demo login")
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
-        {/* Left Side - Branding */}
-        <div className="hidden lg:block space-y-8">
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <BookOpen className="w-7 h-7 text-white" />
-              </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                EduPlatform
-              </span>
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900">Welcome Back to Your Learning Journey</h1>
-            <p className="text-xl text-gray-600">
-              Continue your personalized education experience with AI-powered learning, smart timers, and interactive
-              content.
-            </p>
+      <Card className="w-full max-w-md shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+        <CardHeader className="text-center space-y-4">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <BookOpen className="w-8 h-8 text-white" />
           </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Star className="w-5 h-5 text-blue-600" />
-              </div>
-              <span className="text-gray-700">Smart study timers track your progress</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Star className="w-5 h-5 text-purple-600" />
-              </div>
-              <span className="text-gray-700">Interactive quizzes every 5 pages</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                <Star className="w-5 h-5 text-green-600" />
-              </div>
-              <span className="text-gray-700">AI chatbot for instant help</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side - Login Forms */}
-        <div className="space-y-6">
-          {/* Main Login Card */}
-          <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-              <CardDescription>Enter your credentials to access your learning dashboard</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="username"
-                      type="text"
-                      placeholder="Enter your username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {error && (
-                  <Alert className="border-red-200 bg-red-50">
-                    <AlertDescription className="text-red-800">{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Signing In..." : "Sign In"}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Demo Accounts */}
-          <Card className="bg-white/60 backdrop-blur-sm border-white/20">
-            <CardHeader>
-              <CardTitle className="text-lg">Try Demo Accounts</CardTitle>
-              <CardDescription>Quick access to pre-configured student accounts</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button
-                onClick={() => handleDemoLogin("student1", "pass123")}
-                disabled={isLoading}
-                variant="outline"
-                className="w-full justify-between bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-200"
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            EduPlatform
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            Sign in to continue your learning journey
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700"
               >
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white text-sm font-bold">JD</span>
-                  </div>
-                  <div className="text-left">
-                    <div className="font-medium text-blue-800">John Doe</div>
-                    <div className="text-xs text-blue-600">Grade 5 • student1/pass123</div>
-                  </div>
-                </div>
-                <Badge className="bg-blue-200 text-blue-800">Beginner</Badge>
-              </Button>
-
-              <Button
-                onClick={() => handleDemoLogin("student2", "pass456")}
-                disabled={isLoading}
-                variant="outline"
-                className="w-full justify-between bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-200"
+                Email
+              </Label>
+              <div className="relative">
+                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="email"
+                  type="text"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
               >
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white text-sm font-bold">JS</span>
-                  </div>
-                  <div className="text-left">
-                    <div className="font-medium text-purple-800">Jane Smith</div>
-                    <div className="text-xs text-purple-600">Grade 6 • student2/pass456</div>
-                  </div>
-                </div>
-                <Badge className="bg-purple-200 text-purple-800">Intermediate</Badge>
-              </Button>
-
-              <Button
-                onClick={() => handleDemoLogin("student3", "pass789")}
-                disabled={isLoading}
-                variant="outline"
-                className="w-full justify-between bg-gradient-to-r from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-200"
-              >
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white text-sm font-bold">MJ</span>
-                  </div>
-                  <div className="text-left">
-                    <div className="font-medium text-green-800">Mike Johnson</div>
-                    <div className="text-xs text-green-600">Grade 7 • student3/pass789</div>
-                  </div>
-                </div>
-                <Badge className="bg-green-200 text-green-800">Advanced</Badge>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <div className="text-center">
-            <Button variant="ghost" onClick={() => router.push("/")} className="text-gray-600 hover:text-gray-800">
-              ← Back to Home
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  required
+                  minLength={6}
+                />
+              </div>
+            </div>
+            {error && (
+              <Alert className="border-red-200 bg-red-50">
+                <AlertDescription className="text-red-700">
+                  {error}
+                </AlertDescription>
+              </Alert>
+            )}
+            <Button
+              type="submit"
+              className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Signing in...
+                </span>
+              ) : (
+                "Sign In"
+              )}
             </Button>
+          </form>
+<<<<<<< Updated upstream
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+=======
+          <div className="mt-6 text-center text-sm text-gray-500">
+            <p>Demo Accounts:</p>
+            <p>student1/pass123 (Child - Grade 5)</p>
+            <p>student2/pass456 (Child - Grade 6)</p>
+            <p>admin/admin123 (Admin)</p>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
+>>>>>>> Stashed changes

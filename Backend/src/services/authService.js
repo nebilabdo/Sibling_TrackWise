@@ -22,6 +22,9 @@ const loginUser = async ({ email, password }) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      grade: user.grade,
+      parentId: user.parentId,
+      avatar: user.avatar,
     },
   };
 };

@@ -4,8 +4,16 @@ import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Home, BookOpen, FileText, Target, User, MessageCircle, BarChart3, Settings, ChevronRight } from "lucide-react"
+import {
+  Home,
+  BookOpen,
+  FileText,
+  Target,
+  ChevronRight,
+  Menu,
+  X,
+} from "lucide-react"
+import { useState, useEffect, useRef } from "react"
 
 const navigation = [
   {
@@ -33,140 +41,171 @@ const navigation = [
     icon: Target,
     current: false,
   },
-  {
-    name: "Profile",
-    href: "/child/profile",
-    icon: User,
-    current: false,
-  },
-]
-
-const quickActions = [
-  {
-    name: "AI Tutor",
-    icon: MessageCircle,
-    description: "Get instant help",
-    color: "bg-indigo-500",
-  },
-  {
-    name: "Progress",
-    icon: BarChart3,
-    description: "View your stats",
-    color: "bg-emerald-500",
-  },
-  {
-    name: "Settings",
-    icon: Settings,
-    description: "Customize app",
-    color: "bg-slate-500",
-  },
 ]
 
 export function ChildSidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const [isNavOpen, setIsNavOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const popupRef = useRef<HTMLDivElement>(null)
+
+  // Close popup when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node) &&
+          menuButtonRef.current && !menuButtonRef.current.contains(event.target as Node)) {
+        setIsNavOpen(false)
+      }
+    }
+
+    if (isNavOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isNavOpen])
+
+  // Close popup on route change
+  useEffect(() => {
+    setIsNavOpen(false)
+  }, [pathname])
+
+  const toggleNav = () => {
+    setIsNavOpen(!isNavOpen)
+  }
 
   return (
-    <div className="flex h-full w-64 flex-col bg-white border-r border-slate-200 sidebar-gradient">
-      {/* Logo */}
-      <div className="flex h-16 items-center px-6 border-b border-slate-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-slate-800 gradient-text">EduPlatform</h1>
-            <p className="text-xs text-slate-500">Learning Made Easy</p>
-          </div>
-        </div>
-      </div>
-
-      <ScrollArea className="flex-1 px-4 py-6">
-        {/* Navigation */}
-        <nav className="space-y-2">
-          <div className="px-2 mb-4">
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Navigation</h2>
-          </div>
-          {navigation.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
-            return (
-              <Button
-                key={item.name}
-                variant="ghost"
-                className={cn(
-                  "w-full justify-start h-10 px-3 text-left font-medium transition-all duration-200",
-                  isActive
-                    ? "nav-active text-white shadow-md"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50",
-                )}
-                onClick={() => router.push(item.href)}
+    <>
+      {/* Desktop Sidebar (unchanged) */}
+      <div className="hidden md:flex h-full flex-col bg-gradient-to-br from-[#4B5563] via-[#9CA3AF] to-[#E5E7EB] border-r border-[#D1D5DB] shadow-[0_4px_20px_rgba(0,0,0,0.05)] w-64 space-y-6">
+        <div className="flex items-center p-6 shadow-inner bg-white">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-[#4FACFE] via-[#00F2FE] to-[#43E97B] flex items-center justify-center shadow-md">
+              <BookOpen className="w-5 h-5 text-white drop-shadow-sm" />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <h1
+                className="text-[28px] font-extrabold tracking-wide"
+                style={{
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  textShadow: "1px 1px 3px rgba(0, 0, 0, 0.15)",
+                }}
               >
-                <item.icon className="mr-3 h-4 w-4 flex-shrink-0" />
-                <span className="flex-1 truncate">{item.name}</span>
-                {item.badge && (
-                  <Badge className="ml-2 text-xs bg-indigo-100 text-indigo-700 border-indigo-200">{item.badge}</Badge>
-                )}
-                {isActive && <ChevronRight className="ml-2 h-4 w-4 flex-shrink-0" />}
-              </Button>
-            )
-          })}
-        </nav>
-
-        {/* Quick Actions */}
-        <div className="mt-8">
-          <div className="px-2 mb-4">
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Quick Actions</h2>
-          </div>
-          <div className="space-y-3">
-            {quickActions.map((action) => (
-              <div
-                key={action.name}
-                className="modern-card p-3 cursor-pointer hover:shadow-md transition-all duration-200"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", action.color)}>
-                    <action.icon className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{action.name}</p>
-                    <p className="text-xs text-slate-500 truncate">{action.description}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Study Stats */}
-        <div className="mt-8">
-          <div className="px-2 mb-4">
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Today's Progress</h2>
-          </div>
-          <div className="modern-card p-4 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-600">Lessons Completed</span>
-                <span className="text-sm font-semibold text-indigo-600">3/5</span>
-              </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div className="progress-bar h-2 rounded-full" style={{ width: "60%" }}></div>
-              </div>
-              <div className="flex justify-between items-center text-xs text-slate-500">
-                <span>Keep going!</span>
-                <span>60% complete</span>
-              </div>
+                LOGO
+              </h1>
+              <p className="text-[11px] font-medium text-gray-400">Learning Made Easy</p>
             </div>
           </div>
         </div>
-      </ScrollArea>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-slate-200">
-        <div className="text-center">
-          <p className="text-xs text-slate-400">© 2024 EduPlatform</p>
-          <p className="text-xs text-slate-400">Version 2.1.0</p>
+        <div className="flex-1 px-4 py-6">
+          <nav className="space-y-2">
+            <div className="px-2 mb-4">
+              <h2 className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                Navigation
+              </h2>
+            </div>
+            {navigation.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+              return (
+                <Button
+                  key={item.name}
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start h-10 px-3 text-left font-medium transition-all duration-200",
+                    isActive
+                      ? "bg-white/10 text-white shadow-md"
+                      : "text-gray-200 hover:text-white hover:bg-[#6D7A88]",
+                    "flex flex-row items-center"
+                  )}
+                  onClick={() => router.push(item.href)}
+                >
+                  <item.icon className="mr-3 h-4 w-4 flex-shrink-0" />
+                  <span className="flex-1 truncate">{item.name}</span>
+                  {item.badge && (
+                    <Badge className="ml-2 text-xs bg-[#E0E6ED] text-[#4A5B6E] border-[#B0B8C1]">
+                      {item.badge}
+                    </Badge>
+                  )}
+                  {isActive && (
+                    <ChevronRight className="ml-2 h-4 w-4 flex-shrink-0" />
+                  )}
+                </Button>
+              )
+            })}
+          </nav>
+        </div>
+
+        <div className="p-4 bg-[#5D6674] ">
+          <div className="text-center">
+            <p className="text-xs bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 bg-clip-text text-transparent">
+              © 2024 EduPlatform
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Mobile Header with Menu Button */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white shadow-sm h-16 px-4 flex items-center justify-between">
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-[#4FACFE] via-[#00F2FE] to-[#43E97B] flex items-center justify-center shadow-md">
+          <BookOpen className="w-5 h-5 text-white drop-shadow-sm" />
+        </div>
+        
+        <Button
+          ref={menuButtonRef}
+          variant="ghost"
+          className="h-9 w-9 p-0"
+          onClick={toggleNav}
+        >
+          {isNavOpen ? (
+            <X className="h-6 w-6 text-gray-600" />
+          ) : (
+            <Menu className="h-6 w-6 text-gray-600" />
+          )}
+        </Button>
+      </div>
+
+      {/* Mobile Popup Navigation */}
+      {isNavOpen && (
+        <div
+          ref={popupRef}
+          className="md:hidden fixed z-50 top-20 right-4 bg-white rounded-lg shadow-xl border border-gray-200 w-56 py-2"
+        >
+          <nav className="space-y-1">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+              return (
+                <Button
+                  key={item.name}
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start h-10 px-3 text-left font-medium transition-all duration-200",
+                    isActive
+                      ? "bg-gray-100 text-gray-900"
+                      : "text-gray-700 hover:bg-gray-50",
+                    "flex flex-row items-center"
+                  )}
+                  onClick={() => router.push(item.href)}
+                >
+                  <item.icon className="mr-3 h-4 w-4 flex-shrink-0" />
+                  <span className="flex-1 truncate">{item.name}</span>
+                  {item.badge && (
+                    <Badge className="ml-2 text-xs bg-blue-100 text-blue-800">
+                      {item.badge}
+                    </Badge>
+                  )}
+                </Button>
+              )
+            })}
+          </nav>
+        </div>
+      )}
+    </>
   )
 }
